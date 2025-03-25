@@ -35,14 +35,16 @@ data "bloxone_ipam_subnets" "infoblox_subnet" {
   }
 }
 
-# Nächste verfügbare IP aus Infoblox abrufen
-data "bloxone_ipam_next_available_ips" "next_vm_ip" {
-  id = data.bloxone_ipam_subnets.infoblox_subnet.results[0].id
+# IP aus Subnetz reservieren
+resource "bloxone_ipam_address" "vm_ip" {
+  next_available_id = data.bloxone_ipam_subnets.infoblox_subnet.results[0].id
+  space             = data.bloxone_ipam_subnets.infoblox_subnet.results[0].space
+  comment           = "Terraform Azure VM"
+  tags              = var.vm_tags
 }
 
-# Extrahieren der ersten (und einzigen) IP aus der Liste
 locals {
-  vm_ip = element(flatten(data.bloxone_ipam_next_available_ips.next_vm_ip.results), 0)
+  vm_ip = bloxone_ipam_address.vm_ip.address
 }
 
 # Debug-Output für IP-Adressen

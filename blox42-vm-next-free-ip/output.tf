@@ -1,5 +1,5 @@
 output "vm_private_ip" {
-  value = data.bloxone_ipam_next_available_ips.next_vm_ip.results[0]
+  value = bloxone_ipam_address.vm_ip.address
 }
 
 output "infoblox_dns_record" {

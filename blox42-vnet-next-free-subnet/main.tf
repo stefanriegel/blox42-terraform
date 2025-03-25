@@ -24,90 +24,103 @@ provider "azurerm" {
 locals {
   prefix       = var.vnet_prefix
   subnet_count = length(var.vnets)
+
+  reserved_ip_entries = merge(
+    {
+      for vnet in var.vnets :
+      "${vnet}-1" => {
+        vnet    = vnet
+        offset  = 1
+        comment = "reserved Azure Default Gateway"
+      }
+    },
+    {
+      for vnet in var.vnets :
+      "${vnet}-2" => {
+        vnet    = vnet
+        offset  = 2
+        comment = "reserved Azure DNS-IP-Address for virtual Network"
+      }
+    },
+    {
+      for vnet in var.vnets :
+      "${vnet}-3" => {
+        vnet    = vnet
+        offset  = 3
+        comment = "reserved Azure DNS-IP-Address for virtual Network"
+      }
+    }
+  )
 }
 
-# Hole Address Block aus Infoblox
-data "bloxone_ipam_address_blocks" "example_by_attribute" {
+data "bloxone_ipam_address_blocks" "address_block_from_name" {
   filters = {
     name = var.infoblox_address_block_name
   }
 }
 
-# Hole nächste freie Subnetze aus Infoblox
-data "bloxone_ipam_next_available_subnets" "example_tf_subs" {
-  id           = data.bloxone_ipam_address_blocks.example_by_attribute.results.0.id
+data "bloxone_ipam_next_available_subnets" "next_available_subnets" {
+  id           = data.bloxone_ipam_address_blocks.address_block_from_name.results[0].id
   cidr         = tonumber(replace(var.subnet_cidr, "/", ""))
   subnet_count = local.subnet_count
 }
 
-# Erstelle Virtual Networks
 resource "azurerm_virtual_network" "vnets" {
   for_each            = toset(var.vnets)
   name                = "${local.prefix}-${each.value}"  
   location            = var.region
   resource_group_name = var.resource_group
-  address_space       = ["${replace(trimspace(data.bloxone_ipam_next_available_subnets.example_tf_subs.results[index(var.vnets, each.value)]), "\"", "")}/${var.subnet_cidr}"]
+  address_space       = ["${replace(trimspace(data.bloxone_ipam_next_available_subnets.next_available_subnets.results[index(var.vnets, each.value)]), "\"", "")}/${var.subnet_cidr}"]
 }
 
-# Erstelle Subnets in Azure
 resource "azurerm_subnet" "vnets_subnets" {
   for_each             = toset(var.vnets)
   name                 = "subnet-${azurerm_virtual_network.vnets[each.value].name}"  
   resource_group_name  = var.resource_group
   virtual_network_name = azurerm_virtual_network.vnets[each.value].name
-  address_prefixes     = ["${replace(trimspace(data.bloxone_ipam_next_available_subnets.example_tf_subs.results[index(var.vnets, each.value)]), "\"", "")}/${var.subnet_cidr}"]
+  address_prefixes     = ["${replace(trimspace(data.bloxone_ipam_next_available_subnets.next_available_subnets.results[index(var.vnets, each.value)]), "\"", "")}/${var.subnet_cidr}"]
 }
 
-# Wartezeit für Subnetz-Synchronisation
 resource "time_sleep" "wait_for_subnet" {
   depends_on      = [azurerm_subnet.vnets_subnets]
   create_duration = "5s"
 }
 
-# Registriere Subnets in Infoblox mit Azure-konformer Namensgebung
 resource "bloxone_ipam_subnet" "infoblox_subnets" {
   for_each = toset(var.vnets)
 
   name    = "subnet-${azurerm_virtual_network.vnets[each.value].name}"
-  address = replace(trimspace(data.bloxone_ipam_next_available_subnets.example_tf_subs.results[index(var.vnets, each.value)]), "\"", "")
+  address = replace(trimspace(data.bloxone_ipam_next_available_subnets.next_available_subnets.results[index(var.vnets, each.value)]), "\"", "")
   cidr    = var.subnet_cidr
-  space   = data.bloxone_ipam_address_blocks.example_by_attribute.results.0.space
+  space   = data.bloxone_ipam_address_blocks.address_block_from_name.results[0].space
   comment = var.subnet_comment
 
   tags = var.subnet_tags
 }
 
-# Wartezeit für Infoblox-Synchronisation
 resource "time_sleep" "wait_for_infoblox" {
   depends_on      = [bloxone_ipam_subnet.infoblox_subnets]
   create_duration = "5s"
 }
 
-# Reserviere vordefinierte IPs in Infoblox für jedes Subnetz
-resource "bloxone_ipam_host" "infoblox_reserved_ips" {
-  for_each = toset(var.vnets)
+# Reserviere .1, .2, .3 als „vergeben“ durch Host-Objekte
+resource "bloxone_ipam_host" "reserved_ips" {
+  for_each = local.reserved_ip_entries
 
-  depends_on = [time_sleep.wait_for_infoblox]  # Sicherstellen, dass das Subnetz existiert
-
-  name = "reserved-ips-subnet-${azurerm_virtual_network.vnets[each.value].name}"
+  name = "reserved-${each.key}"
 
   addresses = [
     {
-      address = cidrhost("${bloxone_ipam_subnet.infoblox_subnets[each.value].address}/${var.subnet_cidr}", 1)
-      space   = data.bloxone_ipam_address_blocks.example_by_attribute.results.0.space
-      comment = "Default Gateway"
-    },
-    {
-      address = cidrhost("${bloxone_ipam_subnet.infoblox_subnets[each.value].address}/${var.subnet_cidr}", 2)
-      space   = data.bloxone_ipam_address_blocks.example_by_attribute.results.0.space
-      comment = "Azure Reserved IP"
-    },
-    {
-      address = cidrhost("${bloxone_ipam_subnet.infoblox_subnets[each.value].address}/${var.subnet_cidr}", 3)
-      space   = data.bloxone_ipam_address_blocks.example_by_attribute.results.0.space
-      comment = "Azure Reserved IP"
+      address = cidrhost(
+        "${bloxone_ipam_subnet.infoblox_subnets[each.value.vnet].address}/${var.subnet_cidr}",
+        each.value.offset
+      )
+      space = data.bloxone_ipam_address_blocks.address_block_from_name.results[0].space
     }
   ]
 
-  tags = var.subnet_tags
+  comment = each.value.comment
+  tags    = var.subnet_tags
+
+  depends_on = [time_sleep.wait_for_infoblox]
 }
