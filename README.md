@@ -55,13 +55,13 @@ This repository contains multiple Terraform modules that demonstrate:
 2. **Choose a module**
    ```bash
    # Navigate to the desired module directory
-   cd blox42-vm-next-free-ip
+   cd blox42-vm-next-free-ip-azure
    # or
    cd blox42-dns-multi-cloud
    # or
-   cd blox42-vnet-next-free-subnet
+   cd blox42-vnet-next-free-subnet-azure
    # or
-   cd blox42-vpc-next-free-subnet
+   cd blox42-vpc-next-free-subnet-aws
    # or
    cd blox42-vpc-next-free-subnet-gcp
    ```
@@ -93,9 +93,9 @@ This repository contains multiple Terraform modules that demonstrate:
 Each module has its own `terraform.tfvars` file with example configurations:
 
 - **blox42-dns-multi-cloud**: DNS zones, subzones, and IP addresses for multi-cloud setup
-- **blox42-vm-next-free-ip**: VM configuration, network settings, and DNS zone
-- **blox42-vnet-next-free-subnet**: Azure VNet and subnet configuration
-- **blox42-vpc-next-free-subnet**: AWS VPC and subnet configuration
+- **blox42-vm-next-free-ip-azure**: VM configuration, network settings, and DNS zone
+- **blox42-vnet-next-free-subnet-azure**: Azure VNet and subnet configuration
+- **blox42-vpc-next-free-subnet-aws**: AWS VPC and subnet configuration
 - **blox42-vpc-next-free-subnet-gcp**: GCP VPC and subnet configuration
 
 ## Cleanup
@@ -115,9 +115,9 @@ Never commit `terraform.auto.tfvars` to version control. These files contain sen
 ```
 lab/
 ├── blox42-dns-multi-cloud/     # Multi-cloud DNS management
-├── blox42-vm-next-free-ip/     # Azure VM with dynamic IP
-├── blox42-vnet-next-free-subnet/ # Azure VNet provisioning
-├── blox42-vpc-next-free-subnet/  # AWS VPC provisioning
+├── blox42-vm-next-free-ip-azure/     # Azure VM with dynamic IP
+├── blox42-vnet-next-free-subnet-azure/ # Azure VNet provisioning
+├── blox42-vpc-next-free-subnet-aws/  # AWS VPC provisioning
 ├── blox42-vpc-next-free-subnet-gcp/ # GCP VPC provisioning
 ├── .gitignore                   # Git ignore patterns
 └── README.md                    # This file
