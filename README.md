@@ -27,6 +27,13 @@ This repository contains multiple Terraform modules that demonstrate:
 - Registers VM hostname and IP in Infoblox IPAM
 - Creates DNS A-record for the VM in Infoblox DNS
 
+**blox42-vm-next-free-ip-aws** - AWS EC2 with Dynamic IP
+- Allocates next available IP address from Infoblox subnet
+- Creates AWS EC2 instance with the allocated IP address
+- Creates AWS Network Interface with static IP allocation
+- Registers VM hostname and IP in Infoblox IPAM
+- Creates DNS A-record for the VM in Infoblox DNS
+
 **blox42-vnet-next-free-subnet-azure** - Azure VNet Provisioning
 - Allocates next available subnets from Infoblox address blocks
 - Creates Azure Virtual Networks and subnets with the allocated CIDR ranges
@@ -56,6 +63,8 @@ This repository contains multiple Terraform modules that demonstrate:
    ```bash
    # Navigate to the desired module directory
    cd blox42-vm-next-free-ip-azure
+   # or
+   cd blox42-vm-next-free-ip-aws
    # or
    cd blox42-dns-multi-cloud
    # or
@@ -93,7 +102,8 @@ This repository contains multiple Terraform modules that demonstrate:
 Each module has its own `terraform.tfvars` file with example configurations:
 
 - **blox42-dns-multi-cloud**: DNS zones, subzones, and IP addresses for multi-cloud setup
-- **blox42-vm-next-free-ip-azure**: VM configuration, network settings, and DNS zone
+- **blox42-vm-next-free-ip-azure**: Azure VM configuration, network settings, and DNS zone
+- **blox42-vm-next-free-ip-aws**: AWS EC2 configuration, network settings, and DNS zone
 - **blox42-vnet-next-free-subnet-azure**: Azure VNet and subnet configuration
 - **blox42-vpc-next-free-subnet-aws**: AWS VPC and subnet configuration
 - **blox42-vpc-next-free-subnet-gcp**: GCP VPC and subnet configuration
@@ -116,6 +126,7 @@ Never commit `terraform.auto.tfvars` to version control. These files contain sen
 lab/
 ├── blox42-dns-multi-cloud/     # Multi-cloud DNS management
 ├── blox42-vm-next-free-ip-azure/     # Azure VM with dynamic IP
+├── blox42-vm-next-free-ip-aws/     # AWS EC2 with dynamic IP
 ├── blox42-vnet-next-free-subnet-azure/ # Azure VNet provisioning
 ├── blox42-vpc-next-free-subnet-aws/  # AWS VPC provisioning
 ├── blox42-vpc-next-free-subnet-gcp/ # GCP VPC provisioning

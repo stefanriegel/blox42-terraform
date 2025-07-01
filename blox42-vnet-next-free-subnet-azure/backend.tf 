@@ -1,8 +1,0 @@
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "terraform-backend-rg"
-    storage_account_name = "tfbackendstefan"
-    container_name       = "terraform-state"
-    key                  = "terraform.tfstate"
-  }
-}
