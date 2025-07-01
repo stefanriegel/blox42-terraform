@@ -20,20 +20,20 @@ This repository contains multiple Terraform modules that demonstrate:
 - Establishes consistent DNS naming across cloud environments
 - Provides centralized DNS management through Infoblox
 
-**blox42-vm-next-free-ip** - Azure VM with Dynamic IP
+**blox42-vm-next-free-ip-azure** - Azure VM with Dynamic IP
 - Allocates next available IP address from Infoblox subnet
 - Creates Azure Virtual Machine with the allocated IP address
 - Creates Azure Network Interface with static IP allocation
 - Registers VM hostname and IP in Infoblox IPAM
 - Creates DNS A-record for the VM in Infoblox DNS
 
-**blox42-vnet-next-free-subnet** - Azure VNet Provisioning
+**blox42-vnet-next-free-subnet-azure** - Azure VNet Provisioning
 - Allocates next available subnets from Infoblox address blocks
 - Creates Azure Virtual Networks and subnets with the allocated CIDR ranges
 - Reserves critical IP addresses (.1, .2, .3) for Azure infrastructure
 - Synchronizes subnet information between Azure and Infoblox
 
-**blox42-vpc-next-free-subnet** - AWS VPC Provisioning
+**blox42-vpc-next-free-subnet-aws** - AWS VPC Provisioning
 - Allocates next available subnets from Infoblox address blocks
 - Creates AWS VPCs and subnets with the allocated CIDR ranges
 - Reserves critical IP addresses (.1, .2, .3) for AWS infrastructure
