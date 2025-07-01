@@ -1,0 +1,9 @@
+# DNS Zone
+dns_zone = "blox42.rocks"
+dns_az_zone = "azure"
+dns_aws_zone = "aws"
+dns_gcp_zone = "gcp"
+dns_a_record = "vm-multi-cloud"
+ip_az          = "10.11.0.2"
+ip_aws         = "10.12.0.2"
+ip_gcp         = "10.13.0.2"
