@@ -39,6 +39,12 @@ This repository contains multiple Terraform modules that demonstrate:
 - Reserves critical IP addresses (.1, .2, .3) for AWS infrastructure
 - Synchronizes subnet information between AWS and Infoblox
 
+**blox42-vpc-next-free-subnet-gcp** - GCP VPC Provisioning
+- Allocates next available subnets from Infoblox address blocks
+- Creates GCP VPCs and subnets with the allocated CIDR ranges
+- Reserves critical IP addresses (.1, .2, .3) for GCP infrastructure
+- Synchronizes subnet information between GCP and Infoblox
+
 ## Quick Setup
 
 1. **Prerequisites**
@@ -56,6 +62,8 @@ This repository contains multiple Terraform modules that demonstrate:
    cd blox42-vnet-next-free-subnet
    # or
    cd blox42-vpc-next-free-subnet
+   # or
+   cd blox42-vpc-next-free-subnet-gcp
    ```
 
 3. **Configure credentials**
@@ -88,6 +96,7 @@ Each module has its own `terraform.tfvars` file with example configurations:
 - **blox42-vm-next-free-ip**: VM configuration, network settings, and DNS zone
 - **blox42-vnet-next-free-subnet**: Azure VNet and subnet configuration
 - **blox42-vpc-next-free-subnet**: AWS VPC and subnet configuration
+- **blox42-vpc-next-free-subnet-gcp**: GCP VPC and subnet configuration
 
 ## Cleanup
 
@@ -109,6 +118,7 @@ lab/
 ├── blox42-vm-next-free-ip/     # Azure VM with dynamic IP
 ├── blox42-vnet-next-free-subnet/ # Azure VNet provisioning
 ├── blox42-vpc-next-free-subnet/  # AWS VPC provisioning
+├── blox42-vpc-next-free-subnet-gcp/ # GCP VPC provisioning
 ├── .gitignore                   # Git ignore patterns
 └── README.md                    # This file
 ```

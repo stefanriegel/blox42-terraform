@@ -7,7 +7,7 @@ infoblox_address_block_name = "AWS VPC Address Block"
 
 # VPC Configuration
 vpc_prefix = "blox42-demo"
-vpcs       = ["vpc1", "vpc2", "vpc3", "vpc4", "vpc5"]
+vpcs       = ["vpc1", "vpc2", "vpc3", "vpc4"]
 subnet_cidr = "24"
 
 # Infoblox Subnet Metadata
